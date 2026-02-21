@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  ORGANIZER
+  USER
+}
+
+enum EventStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum OrderStatus {
+  PENDIENTE
+  VALIDADO
+  RECHAZADO
+}
+
+enum TicketStatus {
+  ACTIVO
+  USADO
+  CANCELADO
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  password      String
+  role          Role      @default(USER)
+  status        Boolean   @default(true) // active/inactive
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  events        Event[]   @relation("OrganizerEvents")
+  orders        Order[]
+}
+
+model Event {
+  id            String      @id @default(uuid())
+  organizerId   String
+  organizer     User        @relation("OrganizerEvents", fields: [organizerId], references: [id])
+  title         String
+  description   String      @db.Text
+  date          DateTime
+  location      String
+  price         Float
+  capacity      Int
+  status        EventStatus @default(PENDING)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  orders        Order[]
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  eventId         String
+  event           Event       @relation(fields: [eventId], references: [id])
+  total           Float
+  status          OrderStatus @default(PENDIENTE)
+  paymentProofUrl String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  tickets         Ticket[]
+  commission      Commission?
+}
+
+model Ticket {
+  id            String       @id @default(uuid())
+  orderId       String
+  order         Order        @relation(fields: [orderId], references: [id])
+  ticketUid     String       @unique
+  qrCodeUrl     String
+  status        TicketStatus @default(ACTIVO)
+  scans         TicketScan[]
+}
+
+model Commission {
+  id                String   @id @default(uuid())
+  orderId           String   @unique
+  order             Order    @relation(fields: [orderId], references: [id])
+  percentage        Float
+  adminAmount       Float
+  organizerAmount   Float
+  createdAt         DateTime @default(now())
+}
+
+model TicketScan {
+  id            String   @id @default(uuid())
+  ticketId      String
+  ticket        Ticket   @relation(fields: [ticketId], references: [id])
+  scannedAt     DateTime @default(now())
+  validatedBy   String   // Organizer User ID
+}
