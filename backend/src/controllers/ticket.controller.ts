@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../config/prisma.js';
+import prisma from '../config/prisma';
 
 export const verifyTicket = async (req: any, res: Response) => {
     try {
@@ -8,7 +8,10 @@ export const verifyTicket = async (req: any, res: Response) => {
 
         const ticket = await prisma.ticket.findUnique({
             where: { ticketUid },
-            include: { order: { include: { event: true } } }
+            include: {
+                order: { include: { event: true } },
+                scans: true
+            }
         });
 
         if (!ticket) return res.status(404).json({ message: 'Ticket no encontrado' });

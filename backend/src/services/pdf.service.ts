@@ -1,5 +1,5 @@
 import PDFDocument from 'pdfkit';
-import { generateQRCode } from './qr.service.js';
+import { generateQRCode } from './qr.service';
 
 export const generateTicketPDF = async (ticket: any, event: any, user: any): Promise<Buffer> => {
     return new Promise(async (resolve, reject) => {

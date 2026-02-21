@@ -17,10 +17,10 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // Routes
-import authRoutes from './routes/auth.routes.js';
-import eventRoutes from './routes/event.routes.js';
-import orderRoutes from './routes/order.routes.js';
-import ticketRoutes from './routes/ticket.routes.js';
+import authRoutes from './routes/auth.routes';
+import eventRoutes from './routes/event.routes';
+import orderRoutes from './routes/order.routes';
+import ticketRoutes from './routes/ticket.routes';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../config/prisma.js';
+import prisma from '../config/prisma';
 import { v4 as uuidv4 } from 'uuid'; // I need to install uuid
 
 export const createOrder = async (req: any, res: Response) => {
@@ -64,7 +64,7 @@ export const validateOrderPayment = async (req: Request, res: Response) => {
         const { status } = req.body; // VALIDADO, RECHAZADO
 
         const order = await prisma.order.update({
-            where: { id },
+            where: { id: String(id) },
             data: { status },
             include: { event: true }
         });

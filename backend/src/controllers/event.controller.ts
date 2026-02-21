@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../config/prisma.js';
+import prisma from '../config/prisma';
 
 export const createEvent = async (req: any, res: Response) => {
     try {
@@ -41,7 +41,7 @@ export const getEventById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const event = await prisma.event.findUnique({
-            where: { id },
+            where: { id: String(id) },
             include: { organizer: { select: { name: true } } },
         });
         if (!event) return res.status(404).json({ message: 'Event not found' });
@@ -57,7 +57,7 @@ export const updateEventStatus = async (req: Request, res: Response) => {
         const { status } = req.body; // APPROVED, REJECTED, SUSPENDED
 
         const event = await prisma.event.update({
-            where: { id },
+            where: { id: String(id) },
             data: { status },
         });
 
